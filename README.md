@@ -25,7 +25,7 @@ Then execute the spider directly:
 scrapy crawl enem
 ```
 
-The spider will authenticate using the variables above and will download the most recent result file, saving it as `resultado_registry_<number>_<year>.txt` (or `.csv`, depending on the portal).
+The spider will authenticate using the variables above and will output the most recent result directly to the console instead of saving a file.
 
 ## REST API
 
@@ -47,5 +47,7 @@ Send a POST request to `/consulta` providing the credentials and optional parame
 ```
 
 Any parameter omitted will fall back to the value from the environment.
+
+The API response will contain the text that would normally be saved to a file.
 
 
