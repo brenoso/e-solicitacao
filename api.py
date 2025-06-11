@@ -30,6 +30,6 @@ async def consulta(req: ConsultaRequest):
         raise HTTPException(status_code=500, detail=str(e))
 
     if not spider.result_content:
-        raise HTTPException(status_code=500, detail="Nenhum conteudo gerado")
+        raise HTTPException(status_code=500, detail="Nenhum conteúdo gerado")
 
     return {"resultado": spider.result_content}

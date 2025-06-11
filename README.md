@@ -50,4 +50,25 @@ Any parameter omitted will fall back to the value from the environment.
 
 The API response will contain the text that would normally be saved to a file.
 
+## REST API
+
+You can also run the spider through a small API. Start the server:
+
+```bash
+uvicorn api:app --reload
+```
+
+Send a POST request to `/consulta` providing the credentials and optional parameters in JSON:
+
+```json
+{
+  "login": "seu_login",
+  "password": "sua_senha",
+  "registry": "123456789012",
+  "year": "2015"
+}
+```
+
+Any parameter omitted will fall back to the value from the environment.
+
 
