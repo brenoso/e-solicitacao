@@ -1,0 +1,67 @@
+PATH
+  remote: .
+  specs:
+    enem_solicitacao (0.0.1)
+      mechanize (~> 2.7)
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    addressable (2.3.8)
+    crack (0.4.2)
+      safe_yaml (~> 1.0.0)
+    domain_name (0.5.24)
+      unf (>= 0.0.5, < 1.0.0)
+    dotenv (1.0.2)
+    http-cookie (1.0.2)
+      domain_name (~> 0.5)
+    json (2.7.6)
+    mechanize (2.7.3)
+      domain_name (~> 0.5, >= 0.5.1)
+      http-cookie (~> 1.0)
+      mime-types (~> 2.0)
+      net-http-digest_auth (~> 1.1, >= 1.1.1)
+      net-http-persistent (~> 2.5, >= 2.5.2)
+      nokogiri (~> 1.4)
+      ntlm-http (~> 0.1, >= 0.1.1)
+      webrobots (>= 0.0.9, < 0.2)
+    mime-types (2.6.1)
+    mini_portile2 (2.8.8)
+    minitest (5.7.0)
+    net-http-digest_auth (1.4)
+    net-http-persistent (2.9.4)
+    nokogiri (1.13.10)
+      mini_portile2 (~> 2.8.0)
+      racc (~> 1.4)
+    nokogiri (1.13.10-x64-mingw32)
+      racc (~> 1.4)
+    ntlm-http (0.1.1)
+    racc (1.8.1)
+    rake (10.4.2)
+    safe_yaml (1.0.4)
+    unf (0.1.4)
+      unf_ext
+    unf_ext (0.0.7.1)
+    unf_ext (0.0.7.1-x64-mingw32)
+    vcr (2.9.3)
+    webmock (1.21.0)
+      addressable (>= 2.3.6)
+      crack (>= 0.3.2)
+    webrobots (0.1.1)
+
+PLATFORMS
+  ruby
+  x64-mingw32
+
+DEPENDENCIES
+  dotenv (~> 1.0)
+  enem_solicitacao!
+  json (~> 2.0)
+  minitest (~> 5.7)
+  nokogiri (~> 1.13)
+  rake (~> 10.4)
+  vcr (~> 2.9)
+  webmock (~> 1.18)
+
+BUNDLED WITH
+   1.17.3
