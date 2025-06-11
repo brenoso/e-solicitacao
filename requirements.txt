@@ -1,0 +1,4 @@
+scrapy
+python-dotenv
+fastapi
+uvicorn
