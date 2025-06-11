@@ -22,14 +22,15 @@ async def consulta(req: ConsultaRequest):
         os.environ['ENEM_YEAR'] = req.year
 
     process = CrawlerProcess()
-    spider = EnemSpider()
+    crawler = process.create_crawler(EnemSpider)
     try:
-        process.crawl(spider)
+        process.crawl(crawler)
         process.start()
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+    spider = crawler.spider
     if not spider.result_content:
-        raise HTTPException(status_code=500, detail="Nenhum conteúdo gerado")
+        raise HTTPException(status_code=500, detail="Nenhum conteudo gerado")
 
     return {"resultado": spider.result_content}

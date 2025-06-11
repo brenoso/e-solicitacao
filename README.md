@@ -49,6 +49,7 @@ Send a POST request to `/consulta` providing the credentials and optional parame
 Any parameter omitted will fall back to the value from the environment.
 
 The API response will contain the text that would normally be saved to a file.
+=======
 
 ## REST API
 
@@ -70,5 +71,4 @@ Send a POST request to `/consulta` providing the credentials and optional parame
 ```
 
 Any parameter omitted will fall back to the value from the environment.
-
 
