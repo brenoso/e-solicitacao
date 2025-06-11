@@ -9,10 +9,13 @@ load_dotenv()
 
 class EnemSpider(scrapy.Spider):
     name = 'enem'
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.result_content: str | None = None
     custom_settings = {
         'USER_AGENT': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
         'ROBOTSTXT_OBEY': False,
-        'TWISTED_REACTOR': 'twisted.internet.selectreactor.SelectReactor',
     }
 
     def start_requests(self):
@@ -138,11 +141,6 @@ class EnemSpider(scrapy.Spider):
         )
 
     def save_file(self, response):
-        kind = 'registry'
-        value = response.meta['value']
-        year = response.meta['year']
-        ext = os.path.splitext(response.url)[1] or '.txt'
-        filename = f"resultado_{kind}_{value}_{year}{ext}"
-        with open(filename, 'wb') as f:
-            f.write(response.body)
-        self.logger.info(f"Arquivo salvo em {filename}")
+        """Store the downloaded file content instead of saving it."""
+        self.result_content = response.text
+        self.logger.info("Conteúdo capturado com sucesso")
