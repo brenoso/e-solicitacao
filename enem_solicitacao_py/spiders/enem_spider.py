@@ -16,7 +16,6 @@ class EnemSpider(scrapy.Spider):
     custom_settings = {
         'USER_AGENT': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
         'ROBOTSTXT_OBEY': False,
-        'TWISTED_REACTOR': 'twisted.internet.selectreactor.SelectReactor',
     }
 
     def start_requests(self):

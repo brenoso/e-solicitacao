@@ -1,8 +1,13 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import os
-from scrapy.crawler import CrawlerProcess
+from scrapy.crawler import CrawlerRunner
+from scrapy.utils.project import get_project_settings
+from scrapy.utils.reactor import install_reactor
 from enem_solicitacao_py.spiders.enem_spider import EnemSpider
+
+install_reactor("twisted.internet.asyncioreactor.AsyncioSelectorReactor")
+runner = CrawlerRunner(get_project_settings())
 
 app = FastAPI()
 
@@ -21,15 +26,12 @@ async def consulta(req: ConsultaRequest):
     if req.year:
         os.environ['ENEM_YEAR'] = req.year
 
-    process = CrawlerProcess()
-    crawler = process.create_crawler(EnemSpider)
+    spider = EnemSpider()
     try:
-        process.crawl(crawler)
-        process.start()
+        await runner.crawl(spider)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-    spider = crawler.spider
     if not spider.result_content:
         raise HTTPException(status_code=500, detail="Nenhum conteudo gerado")
 
