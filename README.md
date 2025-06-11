@@ -25,7 +25,7 @@ Then execute the spider directly:
 scrapy crawl enem
 ```
 
-The spider will authenticate using the variables above and stores the retrieved result in memory (attribute `result_content`). No file is saved.
+
 
 ## REST API
 
