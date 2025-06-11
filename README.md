@@ -25,7 +25,30 @@ Then execute the spider directly:
 scrapy crawl enem
 ```
 
-The spider will authenticate using the variables above and will download the most recent result file, saving it as `resultado_registry_<number>_<year>.txt` (or `.csv`, depending on the portal).
+The spider will authenticate using the variables above and stores the retrieved result in memory (attribute `result_content`). No file is saved.
+
+## REST API
+
+You can also run the spider through a small API. Start the server:
+
+```bash
+uvicorn api:app --reload
+```
+
+Send a POST request to `/consulta` providing the credentials and optional parameters in JSON:
+
+```json
+{
+  "login": "seu_login",
+  "password": "sua_senha",
+  "registry": "123456789012",
+  "year": "2015"
+}
+```
+
+Any parameter omitted will fall back to the value from the environment.
+
+The API response will contain the text that would normally be saved to a file.
 
 ## REST API
 
