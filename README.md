@@ -27,4 +27,24 @@ scrapy crawl enem
 
 The spider will authenticate using the variables above and will download the most recent result file, saving it as `resultado_registry_<number>_<year>.txt` (or `.csv`, depending on the portal).
 
+## API
+
+This project also exposes a small FastAPI application that executes the spider
+in a subprocess and returns the retrieved file content. Install the additional dependency
+`fastapi` (and an ASGI server such as `uvicorn`) and run:
+
+```bash
+uvicorn api:app
+```
+
+Once running you can request the result with the registry and year as query
+parameters:
+
+```bash
+curl "http://localhost:8000/consulta?registry=151000163729&year=2015"
+```
+
+The endpoint will return the contents of the generated file directly as the
+response body.
+
 
