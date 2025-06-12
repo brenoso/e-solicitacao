@@ -12,9 +12,9 @@ app = FastAPI()
 def consulta(registry: str, year: str):
     settings = get_project_settings()
     process = CrawlerProcess(settings)
-    spider = EnemSpider(registry=registry, year=year)
-    process.crawl(spider)
+    process.crawl(EnemSpider, registry=registry, year=year)
     process.start()
+    spider = list(process.crawlers)[0].spider if process.crawlers else None
 
     content = getattr(spider, 'result_content', None)
     if content is None:
