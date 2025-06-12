@@ -1,7 +1,3 @@
-# ENEM Solicitação Spider
-
-This repository contains a Scrapy spider used to retrieve ENEM results from the INEP portal.
-
 ## Environment variables
 
 Create a `.env` file (use `.env_example` as a template) and define:
@@ -45,6 +41,4 @@ curl "http://localhost:8000/consulta?registry=151000163729&year=2015"
 ```
 
 The endpoint will return the contents of the generated file directly as the
-response body.
-
-
+response b
