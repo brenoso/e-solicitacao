@@ -4,7 +4,7 @@ from scrapy.http import FormRequest
 from dotenv import load_dotenv
 from datetime import datetime
 
-# Carrega .env (ENEM_LOGIN, ENEM_PASSWORD, ENEM_TARGET_REGISTRY, ENEM_YEAR)
+# Carrega .env (ENEM_LOGIN, ENEM_PASSWORD, ENEM_TARGET_REGISTRY, ENEM_TARGET_CPF, ENEM_YEAR)
 load_dotenv()
 
 class EnemSpider(scrapy.Spider):
@@ -15,11 +15,13 @@ class EnemSpider(scrapy.Spider):
         'TWISTED_REACTOR': 'twisted.internet.selectreactor.SelectReactor',
     }
 
-    def __init__(self, registry: str | None = None, year: str | None = None, *args, **kwargs):
+    def __init__(self, registry: str | None = None, cpf: str | None = None, year: str | None = None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.registry = registry
+        self.cpf = cpf
         self.year = year
         self.result_content: bytes | None = None
+        self.result_extension: str | None = None
 
     def start_requests(self):
         login = os.getenv('ENEM_LOGIN')
@@ -56,24 +58,43 @@ class EnemSpider(scrapy.Spider):
             self.logger.error('Falha na autenticação')
             return
         self.logger.info('Autenticado com sucesso!')
-        registry = self.registry or os.getenv('ENEM_TARGET_REGISTRY', '151000163729')
+        registry = self.registry or os.getenv('ENEM_TARGET_REGISTRY')
+        cpf = self.cpf or os.getenv('ENEM_TARGET_CPF')
         year = self.year or os.getenv('ENEM_YEAR', '2015')
-        consulta_path = f'/EnemSolicitacao/solicitacao/resultado{year}/numeroInscricao/solicitacaoPelaInternet.seam'
+
+        if registry:
+            consulta_path = f'/EnemSolicitacao/solicitacao/resultado{year}/numeroInscricao/solicitacaoPelaInternet.seam'
+            meta = {'value': registry, 'year': year, 'kind': 'registry'}
+        elif cpf:
+            consulta_path = f'/EnemSolicitacao/solicitacao/resultado{year}/cpf/solicitacaoPelaInternet.seam'
+            meta = {'value': cpf, 'year': year, 'kind': 'cpf'}
+        else:
+            self.logger.error('Nenhum registry ou CPF informado')
+            return
+
         consulta_url = response.urljoin(consulta_path)
         yield scrapy.Request(
             consulta_url,
             callback=self.parse_consulta,
-            meta={'value': registry, 'year': year},
+            meta=meta,
             dont_filter=True
         )
 
     def parse_consulta(self, response):
-        registry = response.meta['value']
-        formdata = {
-            'numerosInscricaoDecorate:numerosInscricaoInput': registry,
-            'j_id131.x': '81',
-            'j_id131.y': '23'
-        }
+        kind = response.meta['kind']
+        value = response.meta['value']
+        if kind == 'registry':
+            formdata = {
+                'numerosInscricaoDecorate:numerosInscricaoInput': value,
+                'j_id131.x': '81',
+                'j_id131.y': '23'
+            }
+        else:
+            formdata = {
+                'cpfDecorate:cpfInput': value,
+                'j_id131.x': '81',
+                'j_id131.y': '23'
+            }
         yield FormRequest.from_response(
             response,
             formid='formularioForm',
@@ -99,26 +120,7 @@ class EnemSpider(scrapy.Spider):
 
     def parse_acompanhar(self, response):
         acompanhar_url = response.urljoin(
-            '/EnemSolicitacao/solicitacao/acompanharSolicitacao.seam'
-        )
-        yield scrapy.Request(
-            acompanhar_url,
-            callback=self.parse_table,
-            meta=response.meta,
-            dont_filter=True
-        )
-
-    def parse_table(self, response):
-        # Extrai todas as linhas da tabela de solicitações atendidas
-        rows = response.xpath('//table[@id="listaSolicitacaoAtendidas"]/tbody/tr')
-        total = len(rows)
-        self.logger.debug(f"[PARSE_TABLE] Total de linhas encontradas: {total}")
-
-        # Log detalhado de cada linha encontrada
-        for idx, row in enumerate(rows, 1):
-            sol_id = row.xpath('normalize-space(.//td[1]//text())').get(default='')
-            link = row.xpath('.//td[last()]//a[contains(text(),"Download")]/@href').get(default='')
-            self.logger.debug(f"[PARSE_TABLE] Linha {idx}: solicitação={sol_id}, link={link}")
+@@ -116,33 +143,35 @@ class EnemSpider(scrapy.Spider):
 
         if not rows:
             self.logger.error('[PARSE_TABLE] Nenhuma linha de solicitação encontrada')
@@ -144,7 +146,7 @@ class EnemSpider(scrapy.Spider):
         )
 
     def save_file(self, response):
-        kind = 'registry'
+        kind = response.meta.get('kind', 'registry')
         value = response.meta['value']
         year = response.meta['year']
         ext = os.path.splitext(response.url)[1] or '.txt'
