@@ -1,7 +1,3 @@
-# ENEM Solicitação Spider
-
-This repository contains a Scrapy spider used to retrieve ENEM results from the INEP portal.
-
 ## Environment variables
 
 Create a `.env` file (use `.env_example` as a template) and define:
@@ -29,18 +25,20 @@ The spider will authenticate using the variables above and will download the mos
 
 ## API
 
-This project also exposes a small FastAPI application that runs the spider and
-returns the retrieved file content. Install the additional dependency
+This project also exposes a small FastAPI application that executes the spider
+in a subprocess and returns the retrieved file content. Install the additional dependency
 `fastapi` (and an ASGI server such as `uvicorn`) and run:
 
 ```bash
 uvicorn api:app
 ```
 
-Once running you can request the result with:
+Once running you can request the result with the registry and year as query
+parameters:
 
 ```bash
 curl "http://localhost:8000/consulta?registry=151000163729&year=2015"
 ```
 
-
+The endpoint will return the contents of the generated file directly as the
+response b
