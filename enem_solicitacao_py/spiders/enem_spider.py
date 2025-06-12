@@ -15,6 +15,12 @@ class EnemSpider(scrapy.Spider):
         'TWISTED_REACTOR': 'twisted.internet.selectreactor.SelectReactor',
     }
 
+    def __init__(self, registry: str | None = None, year: str | None = None, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.registry = registry
+        self.year = year
+        self.result_content: bytes | None = None
+
     def start_requests(self):
         login = os.getenv('ENEM_LOGIN')
         password = os.getenv('ENEM_PASSWORD')
@@ -50,8 +56,8 @@ class EnemSpider(scrapy.Spider):
             self.logger.error('Falha na autenticação')
             return
         self.logger.info('Autenticado com sucesso!')
-        registry = os.getenv('ENEM_TARGET_REGISTRY', '151000163729')
-        year = os.getenv('ENEM_YEAR', '2015')
+        registry = self.registry or os.getenv('ENEM_TARGET_REGISTRY', '151000163729')
+        year = self.year or os.getenv('ENEM_YEAR', '2015')
         consulta_path = f'/EnemSolicitacao/solicitacao/resultado{year}/numeroInscricao/solicitacaoPelaInternet.seam'
         consulta_url = response.urljoin(consulta_path)
         yield scrapy.Request(
@@ -145,4 +151,6 @@ class EnemSpider(scrapy.Spider):
         filename = f"resultado_{kind}_{value}_{year}{ext}"
         with open(filename, 'wb') as f:
             f.write(response.body)
+        self.result_content = response.body
+        self.result_extension = ext
         self.logger.info(f"Arquivo salvo em {filename}")
