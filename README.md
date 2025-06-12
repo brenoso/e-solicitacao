@@ -50,5 +50,3 @@ curl "http://localhost:8000/consulta?cpf=12345678900&year=2015"
 
 The endpoint will return the contents of the generated file directly as the
 response body.
-
-

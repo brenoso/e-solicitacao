@@ -120,26 +120,7 @@ class EnemSpider(scrapy.Spider):
 
     def parse_acompanhar(self, response):
         acompanhar_url = response.urljoin(
-            '/EnemSolicitacao/solicitacao/acompanharSolicitacao.seam'
-        )
-        yield scrapy.Request(
-            acompanhar_url,
-            callback=self.parse_table,
-            meta=response.meta,
-            dont_filter=True
-        )
-
-    def parse_table(self, response):
-        # Extrai todas as linhas da tabela de solicitações atendidas
-        rows = response.xpath('//table[@id="listaSolicitacaoAtendidas"]/tbody/tr')
-        total = len(rows)
-        self.logger.debug(f"[PARSE_TABLE] Total de linhas encontradas: {total}")
-
-        # Log detalhado de cada linha encontrada
-        for idx, row in enumerate(rows, 1):
-            sol_id = row.xpath('normalize-space(.//td[1]//text())').get(default='')
-            link = row.xpath('.//td[last()]//a[contains(text(),"Download")]/@href').get(default='')
-            self.logger.debug(f"[PARSE_TABLE] Linha {idx}: solicitação={sol_id}, link={link}")
+@@ -116,33 +143,35 @@ class EnemSpider(scrapy.Spider):
 
         if not rows:
             self.logger.error('[PARSE_TABLE] Nenhuma linha de solicitação encontrada')
